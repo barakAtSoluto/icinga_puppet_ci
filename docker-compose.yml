@@ -1,0 +1,75 @@
+version: '3'
+
+services:
+  puppetdb-postgres:
+    container_name: postgres
+    image: puppet/puppetdb-postgres
+    environment:
+      - POSTGRES_PASSWORD=puppetdb
+      - POSTGRES_USER=puppetdb
+    expose:
+      - 5432
+    volumes:
+      - ./docker_vols/puppetdb-postgres/data1:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD", "psql", "-U","puppetdb", "-l"]
+      interval: 30s
+      timeout: 5s    
+           
+  puppet:
+    container_name: puppet
+    hostname: puppet
+    build: .
+    image: soluto/puppetserver:latest
+    ports:
+      - 8140
+    volumes:
+      #- ./docker_vols/code:/etc/puppetlabs/code/
+      - ./docker_vols/puppet/ssl/:/etc/puppetlabs/puppet/ssl/
+      - ./docker_vols/puppet/serverdata:/opt/puppetlabs/server/data/puppet/
+    # In some cases unqualified hostnames can have the .local suffix
+    # added, I've seen this under Docker of Mac Beta for instance.
+    # Due to needing to access PuppetDB on same hostame as signed in the
+    # certificate you may need to uncommant the following lines
+    #environment:
+    #  - PUPPETDB_SERVER_URLS=https://puppetdb.local:8081
+    #links:
+    #  - puppetdb:puppetdb.local
+
+  puppetdb:
+    hostname: puppetdb
+    image: puppet/puppetdb
+    ports:
+      - "8082:8080"
+      - 8081
+    volumes:
+      - ./docker_vols/puppetdb/ssl:/etc/puppetlabs/puppet/ssl/
+    depends_on:
+      - puppetdb-postgres
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:8080/pdb/dashboard/index.html"]
+        interval: 60s
+        timeout: 3s
+
+  puppetboard:
+    image: puppet/puppetboard
+    ports:
+      - 8000
+
+  puppetexplorer:
+    image: puppet/puppetexplorer
+    ports:
+      - "8081:80"
+    read_only: true
+    depends_on:
+        - puppetdb
+      
+#  icinga2: 
+#    image: jordan/icinga2:latest
+#    ports:
+#      - "8080:80"
+  
+#  ubuntu:
+#    image: puppet/puppet-agent-ubuntu
+#    hostname: ubuntu_agent
+
