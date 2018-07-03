@@ -19,7 +19,10 @@ services:
   puppet:
     container_name: puppet
     hostname: puppet
-    build: .
+    build: 
+      context: .
+      args:
+        yml_path: private_hiera.yaml
     image: soluto/puppetserver:latest
     ports:
       - 8140
