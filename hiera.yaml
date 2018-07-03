@@ -4,4 +4,4 @@
   :datadir: "/etc/puppetlabs/code/environments/production/hieradata"
 :hierarchy:
   - icinga/vars
-
+  
