@@ -27,9 +27,16 @@ services:
     ports:
       - 8140
     volumes:
-      #- ./docker_vols/code:/etc/puppetlabs/code/
+      - ./code:/etc/puppetlabs/code
+      #- ./manifests:/etc/puppetlabs/code/environments/production/manifests
+      - ./github-puppet-code/Puppetfile:/etc/puppetlabs/code/environments/production/Puppetfile
       - ./docker_vols/puppet/ssl/:/etc/puppetlabs/puppet/ssl/
       - ./docker_vols/puppet/serverdata:/opt/puppetlabs/server/data/puppet/
+    deploy:
+      resources:
+        reservations:
+          cpus: '2'
+          memory: 2G
     # In some cases unqualified hostnames can have the .local suffix
     # added, I've seen this under Docker of Mac Beta for instance.
     # Due to needing to access PuppetDB on same hostame as signed in the
