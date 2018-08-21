@@ -61,18 +61,18 @@ services:
         interval: 60s
         timeout: 3s
 
-  puppetboard:
-    image: puppet/puppetboard
-    ports:
-      - 8000
+  # puppetboard:
+  #   image: puppet/puppetboard
+  #   ports:
+  #     - 8000
 
-  puppetexplorer:
-    image: puppet/puppetexplorer
-    ports:
-      - "8081:80"
-    read_only: true
-    depends_on:
-        - puppetdb
+  # puppetexplorer:
+  #   image: puppet/puppetexplorer
+  #   ports:
+  #     - "8081:80"
+  #   read_only: true
+  #   depends_on:
+  #       - puppetdb
       
 #  icinga2: 
 #    image: jordan/icinga2:latest
